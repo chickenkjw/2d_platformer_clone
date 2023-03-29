@@ -9,6 +9,8 @@ public class Player : MonoBehaviour
     Animator anim;
     SpriteRenderer spriteRenderer;
 
+    public GameObject spawnPoint;
+
     float h;
 
     bool isJump = false;
@@ -22,6 +24,8 @@ public class Player : MonoBehaviour
 
     void Start()
     {
+        transform.position = spawnPoint.transform.position;
+
         rigid = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
         spriteRenderer = GetComponent<SpriteRenderer>();
@@ -72,11 +76,31 @@ public class Player : MonoBehaviour
         if(collision.gameObject.layer == ground) {
             isJump = false;
         }
+
+        if(collision.gameObject.CompareTag("Enemy")) {
+            if(collision.gameObject.name == "Body") {
+                Debug.Log("몸 충돌!");
+				rigid.AddForce(new Vector2(-h, 1) * jumpForce * 0.3f, ForceMode2D.Impulse);
+                isJump = true;
+
+                spriteRenderer.color = new Color(1, 0, 0, 0.3f);
+                Invoke(nameof(BackColor), 0.15f);
+			}
+            else if(collision.gameObject.name == "Head") {
+				rigid.AddForce(Vector2.up * jumpForce * 0.4f, ForceMode2D.Impulse);
+				isJump = true;
+			}
+            else if(collision.gameObject.name == "Monster") {
+                Debug.Log("몬스터에 충돌");
+            }
+        }
+    }
+
+    void BackColor() {
+        spriteRenderer.color = new Color(1, 1, 1, 1);
     }
 
     private void OnTriggerEnter2D(Collider2D collision) {
-        if(collision.gameObject.CompareTag("Finish")) {
 
-        }
     }
 }
